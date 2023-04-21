@@ -29,14 +29,14 @@ const Project = sequelize.define('project', {
     
     );
 
-Member.hasMany(Project);
-Project.belongsTo(Member,{
-    foreignKey: "id_member"
+Member.hasMany(Project, {
+    foreignKey: "id_member",
 });
 
-Type.hasMany(Project);
-Project.belongsTo(Type, {
-    foreignKey: "id_type"
+
+Type.hasMany(Project, {
+    foreignKey: "id_type",
 });
+
 
 module.exports = Project;

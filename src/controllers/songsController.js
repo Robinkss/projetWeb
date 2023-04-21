@@ -107,3 +107,18 @@ exports.getGenreBySongId = async (req, res) =>{
         res.status(400).json({message : 'Error song not found', error});
     } 
 };
+
+exports.getSongProjectById = async (req, res) =>{
+    
+    const { id } = req.params;
+    console.log(id);
+    try{
+        const song = await Song.findByPk(id);
+        console.log(song);
+        res.json(song);
+    }catch (error){
+        res.status(400).json({message : 'Error song not found', error});
+    } 
+};
+
+

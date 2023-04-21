@@ -6,7 +6,8 @@ const router = express.Router();
 //===== GET REQUESTS =====//
 router.get("/", controller.getAllSong);
 router.get("/:id", controller.getSongById);
-router.get("/:name", controller.getSongByName);
+router.get("/name/:name", controller.getSongByName);
+router.get("/:id/project", controller.getSongProjectById)
 
 
 //===== POST REQUESTS =====//
