@@ -36,10 +36,12 @@ exports.getTypeByName = async (req, res) =>{
 //==============================//
 //=== CREATE A TYPE ===//
 exports.createType = async (req, res) =>{
-    const { name } = req.body;
+    const { type_name } = req.body;
 
     try{
-        const newType = await Type.create({ name});
+        const newType = await Type.create({ 
+            type_name:type_name
+        });
         res.status(201).json(newType);
     } catch (error){
         res.status(400).json({ message : 'Error creating type', error});

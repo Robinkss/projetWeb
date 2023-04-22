@@ -1,6 +1,7 @@
 const Song = require('../models/Song');
 const Genre = require('../models/Genre');
-
+const SongBelongGenre = require('../models/SongBelongGenre');
+const MemberCollaborateSong = require('../models/MemberCollaborateSong');
 
 exports.getAllSong = async (req, res) =>{
     const songs = await Song.findAll();
@@ -96,6 +97,90 @@ exports.updateSongNameById = async (req, res) =>{
 
 
 //=== RELATIONAL REQUESTS ===//
+
+
+//=== Link Song to a Genre ===//
+exports.addGenreToSong = async (req, res) =>{
+    const { id_genre, id_song} = req.body;
+    try{
+        const songBelongGenre = await SongBelongGenre.create({ 
+            id_genre: id_genre,
+            id_song: id_song
+        });
+        res.status(201).json(songBelongGenre);
+    } catch (error){       
+        res.status(400).json({ message : 'Error adding genre to a song', error});
+    }
+};
+
+//=== Delete a genre to a Song===//
+exports.deleteGenreToSong = async (req, res) =>{
+    const { id_genre, id_song} = req.body;
+    try{
+        const songBelongGenre = await SongBelongGenre.destroy({ 
+            where: {
+                id_genre: id_genre,
+                id_song: id_song
+            }
+        });
+        res.status(201).json(songBelongGenre);
+    } catch (error){       
+        res.status(400).json({ message : 'Error deleting genre to a song', error});
+    }
+};
+
+
+//=== Add a member collaboration to a Song===//
+exports.addMemberToSong = async (req, res) =>{
+    const { id_member, id_song} = req.body;
+    try{
+        const memberCollaborateSong = await MemberCollaborateSong.create({ 
+            id_member: id_member,
+            id_song: id_song
+        });
+        res.status(201).json(memberCollaborateSong);
+    } catch (error){       
+        res.status(400).json({ message : 'Error adding member collaboratio to a song', error});
+    }
+};
+
+//=== Delete a member collaboration to a Song===//
+exports.deleteMemberToSong = async (req, res) =>{
+    const { id_member, id_song} = req.body;
+    try{
+        const memberCollaborateSong = await MemberCollaborateSong.destroy({ 
+            where: {
+                id_member: id_member,
+                id_song: id_song
+            }
+        });
+        res.status(201).json(memberCollaborateSong);
+    } catch (error){       
+        res.status(400).json({ message : 'Error deleting member collaboration to a song', error});
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 exports.getGenreBySongId = async (req, res) =>{
     
     const { id } = req.params;

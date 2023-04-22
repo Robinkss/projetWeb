@@ -1,7 +1,7 @@
 const Member = require('../models/Member');
 const db = require('../config/db');
 const {Sequelize} = require('sequelize');
-const Follow = require('../models/Follow');
+const MemberFollowMember = require('../models/MemberFollowMember');
 
 
 
@@ -43,7 +43,6 @@ exports.getMemberByName = async (req, res) =>{
 //=== CREATE A MEMBER ===//
 exports.createMember = async (req, res) =>{
    
-    console.log(req.body);
     
     try{
         const newMember = await Member.create({ 
@@ -78,20 +77,7 @@ exports.deleteMemberById = async (req, res) =>{
     }
 };
 
-// Un peu débile si ya un doublon donc à retirer
-exports.deleteMemberByName = async (req, res) =>{
-    const {name} = req.body;
-    try{
-        await Member.destroy({
-            where: {
-                member_name: name
-            }
-        })
-        res.status(201).json({message : 'Member created !'});
-    }catch (error){
-        res.status(400).json({ message : 'Error creating member', error});
-    }
-};
+
 //======================//
 
 //=== UPDATE A MEMBER ===//
@@ -146,7 +132,8 @@ exports.getFollowsById = async (req, res) => {
     console.log(id);
     
     try{
-        const follows = await db.query('select m.member_name, m2.member_name as suit from member m natural join follow f'
+        const follows = await db.query('select m.member_name, m2.member_name as suit'
+        +' from member m natural join public."memberFollowMember" f'
         +' inner join member m2 on f.id_member2=m2.id_member'
         +' where m.id_member= CAST($1 AS int);', 
         {
@@ -164,10 +151,10 @@ exports.getFollowsById = async (req, res) => {
 exports.followMember = async (req, res) =>{
     const {id, id2} = req.body;
     try{
-        await Follow.create({id_member: id, id_member2 : id2})
+        await MemberFollowMember.create({id_member: id, id_member2 : id2})
         res.status(201).json({message : 'Follow successfuly added !'});
     }catch(error){
-        res.status(400).json({ message : 'Error updating follow table', error});
+        res.status(400).json({ message : 'Error updating MemberFollowMember table', error});
     }
 };
 
@@ -175,7 +162,7 @@ exports.followMember = async (req, res) =>{
 exports.unfollowMember = async (req, res) =>{
     const {id, id2} = req.body;
     try{
-        await Follow.destroy({
+        await MemberFollowMember.destroy({
             where: {
             id_member: id,
             id_member2: id2,
@@ -183,7 +170,7 @@ exports.unfollowMember = async (req, res) =>{
         })
         res.status(201).json({message : 'Unfollow has successfuly down!'});
     }catch(error){
-        res.status(400).json({ message : 'Error trying to delete a row of follow table', error});
+        res.status(400).json({ message : 'Error trying to delete a row of MemberFollowMember table', error});
     }
 };
 

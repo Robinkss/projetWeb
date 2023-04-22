@@ -11,10 +11,14 @@ router.get("/:id/project", controller.getSongProjectById)
 
 
 //===== POST REQUESTS =====//
-router.post("/", controller.createSong);
+router.post("/create", controller.createSong);
+router.post("/addGenre", controller.addGenreToSong);
+router.post("/addMember", controller.addMemberToSong);
 
 //===== DELETE REQUESTS =====//
 router.delete("/delete", controller.deleteSongById);
+router.delete("/deleteGenre", controller.deleteGenreToSong);
+router.delete("/deleteMember", controller.deleteMemberToSong);
 
 //===== UPDATE REQUESTS =====//
 router.put("/updateName", controller.updateSongNameById);

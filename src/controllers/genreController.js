@@ -12,7 +12,7 @@ exports.getAllGenre = async (req, res) =>{
 exports.getGenreById = async (req, res) =>{
     
     const { id } = req.params;
-    console.log(id);
+    
     try{
         const genre = await Genre.findByPk(id);
         res.json(genre);
@@ -39,10 +39,11 @@ exports.getGenreByName = async (req, res) =>{
 
 //=== CREATE A GENRE ===//
 exports.createGenre = async (req, res) =>{
-    const { name } = req.body;
-
+    const { genre_name } = req.body;
     try{
-        const newGenre = await Genre.create({ name});
+        const newGenre = await Genre.create({ 
+            genre_name: genre_name
+        });
         res.status(201).json(newGenre);
     } catch (error){
         res.status(400).json({ message : 'Error creating genre', error});
@@ -82,6 +83,26 @@ exports.updateGenreNameById = async (req, res) =>{
     }
 };
 
+
+//===== REQUESTS WITH SongBelongGenre TABLE =====//
+
+exports.getSongsOfGenre = async (req, res) =>{
+    
+    const { id } = req.params;
+    try{
+        const follows = await db.query('select m.member_name, m2.member_name as suit from member m natural join follow f'
+        +' inner join member m2 on f.id_member2=m2.id_member'
+        +' where m.id_member= CAST($1 AS int);', 
+        {
+            bind: [id],
+            type: db.QueryTypes.SELECT,
+        },
+        );
+        res.json(follows);
+    }catch (error){
+        console.log("Erreur getFollowsById");
+    }
+};
 
 
 

@@ -12,10 +12,11 @@ router.get("/follows/:id", controller.getFollowsById);
 //===== POST REQUESTS =====//
 router.post("/", controller.createMember);
 router.post("/follow/:id", controller.followMember);
-router.post("/unfollow/:id", controller.unfollowMember);
+
 
 //===== DELETE REQUESTS =====//
 router.delete("/delete", controller.deleteMemberById);
+router.delete("/unfollow/:id", controller.unfollowMember);
 
 //===== UPDATE REQUESTS =====//
 router.put("/updateName", controller.updateNameById);

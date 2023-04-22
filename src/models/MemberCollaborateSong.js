@@ -1,10 +1,10 @@
 const {DataTypes} = require('sequelize');
 const sequelize = require('../config/db');
 const Member = require('./Member');
-const Project = require('./Project');
+const Song = require('./Song');
 
 
-const Participate = sequelize.define('participate', {
+const MemberCollaborateSong = sequelize.define('memberCollaborateSong', {
     id_member: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -14,13 +14,13 @@ const Participate = sequelize.define('participate', {
             key: 'id_member'
         }
     },
-    id_project: {
+    id_song: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,
         references: {
-            model: Project,
-            key: 'id_project'
+            model: Song,
+            key: 'id_song'
         }
     }
     }, 
@@ -31,4 +31,4 @@ const Participate = sequelize.define('participate', {
     );
 
 
-module.exports = Participate;
+module.exports = MemberCollaborateSong;

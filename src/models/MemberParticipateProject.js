@@ -1,8 +1,10 @@
 const {DataTypes} = require('sequelize');
 const sequelize = require('../config/db');
-const Member = require('./Member')
+const Member = require('./Member');
+const Project = require('./Project');
 
-const Follow = sequelize.define('follow', {
+
+const MemberParticipateProject = sequelize.define('memberParticipateProject', {
     id_member: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -12,13 +14,13 @@ const Follow = sequelize.define('follow', {
             key: 'id_member'
         }
     },
-    id_member2: {
+    id_project: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         allowNull: false,
         references: {
-            model: Member,
-            key: 'id_member'
+            model: Project,
+            key: 'id_project'
         }
     }
     }, 
@@ -29,4 +31,4 @@ const Follow = sequelize.define('follow', {
     );
 
 
-module.exports = Follow;
+module.exports = MemberParticipateProject;
