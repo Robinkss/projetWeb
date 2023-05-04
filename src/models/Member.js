@@ -11,6 +11,7 @@ const Member = sequelize.define('member', {
     member_mail: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
     },
     member_name: {
         type: DataTypes.STRING,

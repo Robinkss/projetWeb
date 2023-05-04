@@ -10,7 +10,8 @@ router.get("/:name", controller.getMemberByName);
 router.get("/follows/:id", controller.getFollowsById);
 
 //===== POST REQUESTS =====//
-router.post("/", controller.createMember);
+router.post("/signup", controller.signUp);
+router.post("/login", controller.login);
 router.post("/follow/:id", controller.followMember);
 
 

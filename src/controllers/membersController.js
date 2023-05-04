@@ -2,6 +2,8 @@ const Member = require('../models/Member');
 const db = require('../config/db');
 const {Sequelize} = require('sequelize');
 const MemberFollowMember = require('../models/MemberFollowMember');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 
 
@@ -41,14 +43,15 @@ exports.getMemberByName = async (req, res) =>{
 //==============================//
 
 //=== CREATE A MEMBER ===//
-exports.createMember = async (req, res) =>{
+exports.signUp = async (req, res) =>{
    
     
     try{
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
         const newMember = await Member.create({ 
             member_mail: req.body.mail,
             member_name: req.body.name,
-            member_password: req.body.password,
+            member_password: hashedPassword,
             member_description: req.body.description,
             member_photo: req.body.photo,
             admin: req.body.admin
@@ -56,8 +59,39 @@ exports.createMember = async (req, res) =>{
         res.status(201).json(newMember);
     } catch (error){
         res.status(400).json({ message : 'Error creating member', error});
-    }
+    } 
 };
+
+
+//=== LOGIN ===//
+exports.login = async (req, res) =>{
+   
+    
+    try{
+        const member = await Member.findOne({ where : {member_mail: req.body.mail}}).then(
+            (member)=>{
+                if(!member){
+                    return res.status(401).json({error: "Utilisateur non trouvé"})
+                }
+                bcrypt.compare(req.body.password, member.member_password).then(
+                    (validation)=>{
+                        if(!validation){
+                            return res.status(401).json({error: "Mot de passe incorrect !"})
+                        }
+                        console.log("Membre "+member.member_mail+" connecté !");
+                        const token = jwt.sign({id_member:member.id_member}, process.env.JWT_TOKEN, {expiresIn: "1h"});
+                        res.status(200).json({token});
+                    }
+                )
+            }
+        )
+        
+    } catch (error){
+        res.status(500).json({ message : 'Internal server error', error});
+    } 
+};
+
+
 //======================//
 
 
@@ -173,6 +207,8 @@ exports.unfollowMember = async (req, res) =>{
         res.status(400).json({ message : 'Error trying to delete a row of MemberFollowMember table', error});
     }
 };
+
+
 
 
 // const getMembers = function(req, res){
