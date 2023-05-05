@@ -1,9 +1,11 @@
 const Member = require('../models/Member');
-const db = require('../config/db');
-const {Sequelize} = require('sequelize');
 const MemberFollowMember = require('../models/MemberFollowMember');
+const {Sequelize} = require('sequelize');
+const db = require('../config/db');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const isemail = require("isemail");
+const auth = require("../middleware/auth");
 
 
 
@@ -44,8 +46,10 @@ exports.getMemberByName = async (req, res) =>{
 
 //=== CREATE A MEMBER ===//
 exports.signUp = async (req, res) =>{
-   
-    
+   if(!isemail.validate(req.body.mail)){
+        return res.status(400).json({message : 'Veuillez saisir un mail valide !'});
+   }
+   //TODO : check if email arleady exist in database
     try{
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         const newMember = await Member.create({ 
@@ -54,7 +58,7 @@ exports.signUp = async (req, res) =>{
             member_password: hashedPassword,
             member_description: req.body.description,
             member_photo: req.body.photo,
-            admin: req.body.admin
+            admin: false
         });
         res.status(201).json(newMember);
     } catch (error){
@@ -183,10 +187,14 @@ exports.getFollowsById = async (req, res) => {
 
 // Permet à un membre de suivre un autre membre
 exports.followMember = async (req, res) =>{
-    const {id, id2} = req.body;
+    const userId = req.token.id_member
+    const {idFollowed} = req.body;
+    if(userId == idFollowed){
+        return res.status(400).json({message: 'Impossible de se suivre soi-même !'});
+    }
     try{
-        await MemberFollowMember.create({id_member: id, id_member2 : id2})
-        res.status(201).json({message : 'Follow successfuly added !'});
+        await MemberFollowMember.create({id_member: userId, id_member2 : idFollowed})
+        res.status(201).json({message : 'Follow successfuly added ! With the user : '+ userId});
     }catch(error){
         res.status(400).json({ message : 'Error updating MemberFollowMember table', error});
     }
