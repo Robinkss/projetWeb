@@ -39,10 +39,11 @@ exports.getGenreByName = async (req, res) =>{
 
 //=== CREATE A GENRE ===//
 exports.createGenre = async (req, res) =>{
-    const { genre_name } = req.body;
+    const { genre_name , genre_description} = req.body;
     try{
         const newGenre = await Genre.create({ 
-            genre_name: genre_name
+            genre_name: genre_name,
+            genre_description: genre_description
         });
         res.status(201).json(newGenre);
     } catch (error){

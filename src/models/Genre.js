@@ -11,6 +11,9 @@ const Genre = sequelize.define('genre', {
     genre_name: {
         type: DataTypes.STRING,
         allowNull: false,
+    },
+    genre_description: {
+        type: DataTypes.STRING,
     }
       
     }, {
