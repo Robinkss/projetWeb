@@ -23,7 +23,6 @@ const Member = sequelize.define('member', {
     },
     member_description: {
         type: DataTypes.STRING,
-        allowNull: false,
     },
     member_photo: {
         type: DataTypes.STRING,

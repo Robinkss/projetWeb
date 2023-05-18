@@ -47,9 +47,16 @@ exports.getMemberByName = async (req, res) =>{
 //=== CREATE A MEMBER ===//
 exports.signUp = async (req, res) =>{
    if(!isemail.validate(req.body.mail)){
-        return res.status(400).json({message : 'Veuillez saisir un mail valide !'});
+        return res.status(400).json({message : 'Veuillez saisir un mail valide !', severity: "error"});
    }
-   //TODO : check if email arleady exist in database
+   // Regarde si l'email saisi par l'utilisateur existe déjà
+    const member = await Member.findOne({ where : {member_mail: req.body.mail}})
+    if (member) {
+
+        return res.status(400).json({ message: "Ce mail est déjà utilisé, veuillez en utiliser un autre !", severity: "error" })
+
+    }        
+   
     try{
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         const newMember = await Member.create({ 
@@ -60,11 +67,12 @@ exports.signUp = async (req, res) =>{
             member_photo: req.body.photo,
             admin: false
         });
-        res.status(201).json(newMember);
+        res.status(201).json({newMember, message: 'Inscription terminée !', severity: "success"});
     } catch (error){
-        res.status(400).json({ message : 'Error creating member', error});
+        res.status(400).json({ message : 'Error creating member', severity: "error"});
     } 
 };
+
 
 
 //=== LOGIN ===//
