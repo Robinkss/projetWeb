@@ -17,7 +17,7 @@ router.post("/follow/:id", auth, controller.followMember);
 
 
 //===== DELETE REQUESTS =====//
-router.delete("/delete", controller.deleteMemberById);
+router.delete("/delete/:id", auth, controller.deleteMemberById);
 router.delete("/unfollow/:id", auth, controller.unfollowMember);
 
 //===== UPDATE REQUESTS =====//

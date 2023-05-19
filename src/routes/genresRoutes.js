@@ -8,6 +8,7 @@ router.get("/", controller.getAllGenre);
 router.get("/:id", controller.getGenreById);
 router.get("/name/:name", controller.getGenreByName);
 router.get("/:id/project", controller.getSongsOfGenre);
+router.get("/image/:genre_name", controller.getImageByName);
 
 
 //===== POST REQUESTS =====//

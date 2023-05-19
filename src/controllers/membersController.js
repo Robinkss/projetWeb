@@ -109,7 +109,7 @@ exports.login = async (req, res) =>{
 
 //=== DELETE A MEMBER ===//
 exports.deleteMemberById = async (req, res) =>{
-    const {id} = req.body;
+    const {id} = req.params;
     
     try{
         await Member.destroy({
@@ -119,6 +119,7 @@ exports.deleteMemberById = async (req, res) =>{
         })
         res.status(201).json({message : 'Member deleted'});
     }catch (error){
+        console.log('ON est la ??');
         res.status(400).json({ message : 'Error deleting member', error});
     }
 };

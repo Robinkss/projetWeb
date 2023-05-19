@@ -1,4 +1,6 @@
 const Genre = require('../models/Genre');
+const path = require('path');
+const fs = require('fs');
 
 
 
@@ -20,6 +22,30 @@ exports.getGenreById = async (req, res) =>{
         res.status(400).json({message : 'Error genre not found', error});
     } 
 };
+
+
+
+exports.getImageByName = (req, res) => {
+  const { genre_name } = req.params;
+  
+  // Construction du chemin d'accès à l'image en utilisant l'identifiant
+  const imagePath = path.join(__dirname, '../images/genres', `${genre_name}.jpg`);
+  
+  // Vérification de l'existence de l'image
+  if (fs.existsSync(imagePath)) {
+    console.log('NICE');
+    // Lecture du fichier image
+    const image = fs.readFileSync(imagePath);
+    
+    // Renvoi de la réponse avec le type de contenu "image/jpeg" et l'image elle-même
+    res.contentType('image/jpeg');
+    res.send(image);
+  } else {
+    // Si l'image n'existe pas, renvoie d'une réponse d'erreur ou d'une image par défaut
+    res.status(404).send('Image not found');
+  }
+};
+
 
 exports.getGenreByName = async (req, res) =>{
     const { name } = req.params;
