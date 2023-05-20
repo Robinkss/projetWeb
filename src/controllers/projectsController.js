@@ -63,6 +63,11 @@ exports.deleteProjectById = async (req, res) =>{
     const {id} = req.body;
     
     try{
+        await MemberParticipateProject.destroy({
+            where: {
+                id_project: id
+            }
+        })
         await Project.destroy({
             where: {
                 id_project: id

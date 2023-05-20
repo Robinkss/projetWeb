@@ -1,6 +1,11 @@
 const Member = require('../models/Member');
 const MemberFollowMember = require('../models/MemberFollowMember');
-const {Sequelize} = require('sequelize');
+const MemberCollaborateSong = require('../models/MemberCollaborateSong');
+const MemberParticipateProject = require('../models/MemberParticipateProject');
+const Song = require('../models/Song');
+const songsController = require('./songsController');
+const Project = require('../models/Project');
+const {Sequelize, Op} = require('sequelize');
 const db = require('../config/db');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -67,6 +72,8 @@ exports.signUp = async (req, res) =>{
             member_photo: req.body.photo,
             admin: false
         });
+        const photo = req.body.photoInput;
+        console.log(photo);
         res.status(201).json({newMember, message: 'Inscription terminée !', severity: "success"});
     } catch (error){
         res.status(400).json({ message : 'Error creating member', severity: "error"});
@@ -110,8 +117,31 @@ exports.login = async (req, res) =>{
 //=== DELETE A MEMBER ===//
 exports.deleteMemberById = async (req, res) =>{
     const {id} = req.params;
-    
+    console.log(id);
     try{
+        console.log('1');
+        MemberParticipateProject.destroy({
+            where: {
+                id_member: id
+            }
+        })
+        console.log('2');
+        MemberCollaborateSong.destroy({
+            where: { 
+                id_member: id 
+            }   
+        })
+        console.log('3');
+        MemberFollowMember.destroy({
+            where:{
+            [Op.or] : [
+                {id_member: id},
+                {id_member2: id}
+            ] 
+            }   
+        })
+        console.log('4');
+        await deleteAllMemberSongs(id);
         await Member.destroy({
             where: {
                 id_member: id
@@ -123,6 +153,59 @@ exports.deleteMemberById = async (req, res) =>{
         res.status(400).json({ message : 'Error deleting member', error});
     }
 };
+
+getAllMemberSongs = async (id) =>{
+    try{
+        const songs = await Song.findAll({
+            where: {
+                id_member: id
+            }
+        });
+        return songs;
+    }catch(error){
+        console.log("Erreur getAllMemberSongs");
+    }
+};
+
+getAllMemberProjects = async (id) =>{
+    try{
+        const projects = await Project.findAll({
+            where: {
+                id_member: id
+            }
+        });
+        return projects;
+    }catch(error){
+        console.log("Erreur getAllMemberProjects");
+    }
+};
+
+deleteAllMemberProjects = async (id) =>{
+    const projectsId = await getAllMemberProjects(id);
+    try{
+        projectsId.forEach(async (project) => {
+            await Project.destroy({
+                where: {
+                    id_project: project.id_project
+                }
+            })
+        });
+    }catch(error){
+        console.log("Erreur deleteAllMemberProjects");
+    }
+};
+
+deleteAllMemberSongs = async (id) =>{
+    const songsId = await getAllMemberSongs(id);
+    try{
+        songsId.forEach(async (song) => {
+            await songsController.deleteSongById(song.id_song);
+        });
+    }catch(error){
+        console.log("Erreur deleteAllMemberSongs");
+    }
+};
+
 
 
 //======================//

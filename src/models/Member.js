@@ -26,7 +26,6 @@ const Member = sequelize.define('member', {
     },
     member_photo: {
         type: DataTypes.STRING,
-        allowNull: false,
     }, 
     admin: {
         type: DataTypes.BOOLEAN,

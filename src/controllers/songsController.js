@@ -62,11 +62,21 @@ exports.createSong = async (req, res) =>{
 };
 
 
-//=== DELETE A TYPE ===//
+//=== DELETE A SONG ===//
 exports.deleteSongById = async (req, res) =>{
     const {id} = req.body;
     
     try{
+        SongBelongGenre.destroy({
+            where: {
+                id_song: id
+            }
+        })
+        MemberCollaborateSong.destroy({
+            where: {
+                id_song: id
+            }
+        })
         await Song.destroy({
             where: {
                 id_song: id
@@ -78,6 +88,8 @@ exports.deleteSongById = async (req, res) =>{
         res.status(400).json({ message : 'Error deleting song', error});
     }
 };
+
+
 
 
 //=== UPDATE A TYPE ===//

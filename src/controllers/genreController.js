@@ -33,7 +33,6 @@ exports.getImageByName = (req, res) => {
   
   // Vérification de l'existence de l'image
   if (fs.existsSync(imagePath)) {
-    console.log('NICE');
     // Lecture du fichier image
     const image = fs.readFileSync(imagePath);
     
