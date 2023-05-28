@@ -2,6 +2,9 @@ const Song = require('../models/Song');
 const Genre = require('../models/Genre');
 const SongBelongGenre = require('../models/SongBelongGenre');
 const MemberCollaborateSong = require('../models/MemberCollaborateSong');
+const path = require('path');
+const fs = require('fs');
+
 
 exports.getAllSong = async (req, res) =>{
     const songs = await Song.findAll();
@@ -41,54 +44,84 @@ exports.getSongByName = async (req, res) =>{
 };
 
 //==============================//
+
 //=== CREATE A TYPE ===//
 exports.createSong = async (req, res) =>{
-    const { name, path, id_member, id_project} = req.body;
-    console.log(name);
-    console.log(path);
-    console.log(id_member);
+    const { songName, id_member, genre} = req.body;
+    console.log("Request body :");
+    console.log(req.body);
+    
     try{
         const newSong = await Song.create({ 
-            song_name: name, 
-            song_path: path, 
+            song_name: songName,
             id_member: id_member,
-            id_project: id_project
+            id_genre: genre
         });
+
         res.status(201).json(newSong);
     } catch (error){
-        
+        console.log("Dans le catch");
         res.status(400).json({ message : 'Error creating song', error});
     }
 };
+
+exports.uploadSongFiles = async (req, res) => {
+    const { id } = req.params;
+    console.log("Req.files :");
+    console.log(req.files);
+    
+    const songImageFile = req.files["songImage"][0];
+    const songFile = req.files["song"][0];
+  
+    try {
+      // Déplacez l'image vers le dossier de destination avec le nom correspondant à l'ID de la musique
+      const songImagePath = path.join(__dirname, "../ressources/images/songs", `${id}.jpg`);
+      fs.renameSync(songImageFile.path, songImagePath);
+  
+      // Déplacez l'audio vers le dossier de destination avec le nom correspondant à l'ID de la musique
+      const songFilePath = path.join(__dirname, "../ressources/songs", `${id}.mp3`);
+      fs.renameSync(songFile.path, songFilePath);
+  
+      // Répondre avec succès
+      res.status(200).json({ message: "Fichiers téléchargés avec succès." });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: "Une erreur s'est produite lors du déplacement des fichiers." });
+    }
+  };
+  
+  
 
 
 //=== DELETE A SONG ===//
 exports.deleteSongById = async (req, res) =>{
     const {id} = req.body;
-    
+    isDeleted = await deleteSong(id);
+    if(isDeleted){
+        res.status(201).json({message : 'Song deleted'});
+    }else{
+        res.status(400).json({ message : 'Error deleting song'});
+    }
+};
+
+exports.deleteSong = async (songId) => {
     try{
-        SongBelongGenre.destroy({
-            where: {
-                id_song: id
-            }
-        })
         MemberCollaborateSong.destroy({
             where: {
-                id_song: id
+                id_song: songId
             }
         })
         await Song.destroy({
             where: {
-                id_song: id
+                id_song: songId
             }
         })
-        res.status(201).json({message : 'Song deleted'});
+        return true;
     }catch (error){
-
-        res.status(400).json({ message : 'Error deleting song', error});
+        return false;
     }
+    
 };
-
 
 
 
@@ -111,21 +144,21 @@ exports.updateSongNameById = async (req, res) =>{
 //=== RELATIONAL REQUESTS ===//
 
 
-//=== Link Song to a Genre ===//
-exports.addGenreToSong = async (req, res) =>{
-    const { id_genre, id_song} = req.body;
-    try{
-        const songBelongGenre = await SongBelongGenre.create({ 
-            id_genre: id_genre,
-            id_song: id_song
-        });
-        res.status(201).json(songBelongGenre);
-    } catch (error){       
-        res.status(400).json({ message : 'Error adding genre to a song', error});
-    }
-};
+// //=== Link Song to a Genre ===//
+// exports.addGenreToSong = async (req, res) =>{
+//     const { id_genre, id_song} = req.body;
+//     try{
+//         const songBelongGenre = await SongBelongGenre.create({ 
+//             id_genre: id_genre,
+//             id_song: id_song
+//         });
+//         res.status(201).json(songBelongGenre);
+//     } catch (error){       
+//         res.status(400).json({ message : 'Error adding genre to a song', error});
+//     }
+// };
 
-//=== Delete a genre to a Song===//
+/* //=== Delete a genre to a Song===//
 exports.deleteGenreToSong = async (req, res) =>{
     const { id_genre, id_song} = req.body;
     try{
@@ -139,7 +172,7 @@ exports.deleteGenreToSong = async (req, res) =>{
     } catch (error){       
         res.status(400).json({ message : 'Error deleting genre to a song', error});
     }
-};
+}; */
 
 
 //=== Add a member collaboration to a Song===//

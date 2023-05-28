@@ -8,9 +8,11 @@ module.exports = (req, res, next) =>{
         console.log('Le TOKEN : ');
         console.log(token);
         if(!token){
-            res.status(401).json({message: "Token d'authentification manquant !"})
+            return res.status(401).json({message: "Token d'authentification manquant !"})
         }
+        console.log('Avant verify');
         req.token = jwt.verify(token, process.env.JWT_TOKEN);
+        console.log('Après verify');
         next();
     }catch(error){
         console.log('Dans erreur');

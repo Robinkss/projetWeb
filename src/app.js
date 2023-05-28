@@ -8,15 +8,17 @@ const genresRoutes = require('./routes/genresRoutes');
 const typesRoutes = require('./routes/typesRoutes'); 
 const projectsRoutes = require('./routes/projectsRoutes');
 const cookieParser = require("cookie-parser");
-
+const multer = require("multer");
+const bodyParser = require("body-parser");
 
 const app = express();
 
 
 app.use(express.json());
-app.use(express.urlencoded({extended:false}));
+app.use(express.urlencoded({extended:true}));
 app.use(cors());
 app.use(cookieParser());
+app.use(express.static('src/ressources'));
 
 
 app.use("/members", membersRoutes);

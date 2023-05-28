@@ -2,6 +2,7 @@ const {DataTypes} = require('sequelize');
 const sequelize = require('../config/db');
 const Project = require('./Project');
 const Member = require('./Member');
+const Genre = require('./Genre');
 
 const Song = sequelize.define('song', {
     id_song : {
@@ -11,10 +12,6 @@ const Song = sequelize.define('song', {
         allowNull: false,
     },
     song_name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    song_path: {
         type: DataTypes.STRING,
         allowNull: false,
     },
@@ -32,6 +29,10 @@ Member.hasMany(Song, {
 
 Project.hasMany(Song, {
     foreignKey: "id_project",
+});
+
+Genre.hasMany(Song, {
+    foreignKey: "id_genre",
 });
 
 

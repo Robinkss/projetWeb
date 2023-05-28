@@ -9,6 +9,8 @@ router.get("/", controller.getAllMembers);
 router.get("/:id", controller.getMemberById);
 router.get("/:name", controller.getMemberByName);
 router.get("/follows/:id", controller.getFollowsById);
+router.get("/songs/:id", controller.getAllMemberSongsById);
+router.get("/image/:id_user", controller.getImageById);
 
 //===== POST REQUESTS =====//
 router.post("/signup", controller.signUp);

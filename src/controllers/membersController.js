@@ -11,6 +11,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const isemail = require("isemail");
 const auth = require("../middleware/auth");
+const path = require('path');
+const fs = require('fs');
 
 
 
@@ -47,6 +49,26 @@ exports.getMemberByName = async (req, res) =>{
         res.status(400).json({message : 'Error member not found', error});
     } 
 };
+
+exports.getImageById = (req, res) => {
+    const { id_user } = req.params;
+    
+    // Construction du chemin d'accès à l'image en utilisant l'identifiant
+    const imagePath = path.join(__dirname, '../images/members', `${id_user}.png`);
+    
+    // Vérification de l'existence de l'image
+    if (fs.existsSync(imagePath)) {
+      // Lecture du fichier image
+      const image = fs.readFileSync(imagePath);
+      
+      // Renvoi de la réponse avec le type de contenu "image/jpeg" et l'image elle-même
+      res.contentType('image/png');
+      res.send(image);
+    } else {
+      // Si l'image n'existe pas, renvoie d'une réponse d'erreur ou d'une image par défaut
+      res.status(404).send('Image not found');
+    }
+  };
 //==============================//
 
 //=== CREATE A MEMBER ===//
@@ -73,6 +95,7 @@ exports.signUp = async (req, res) =>{
             admin: false
         });
         const photo = req.body.photoInput;
+        console.log('Photo : ');
         console.log(photo);
         res.status(201).json({newMember, message: 'Inscription terminée !', severity: "success"});
     } catch (error){
@@ -154,16 +177,18 @@ exports.deleteMemberById = async (req, res) =>{
     }
 };
 
-getAllMemberSongs = async (id) =>{
+exports.getAllMemberSongsById = async (req, res) =>{
+    const {id} = req.params;
+    console.log('getAllMemberSongsById -> id : ' + id);
     try{
         const songs = await Song.findAll({
             where: {
                 id_member: id
             }
         });
-        return songs;
+        res.json(songs);
     }catch(error){
-        console.log("Erreur getAllMemberSongs");
+        res.status(400).json({message : 'Error getting all member songs', error});
     }
 };
 
@@ -196,13 +221,22 @@ deleteAllMemberProjects = async (id) =>{
 };
 
 deleteAllMemberSongs = async (id) =>{
-    const songsId = await getAllMemberSongs(id);
+    
     try{
-        songsId.forEach(async (song) => {
-            await songsController.deleteSongById(song.id_song);
+        const songs = await Song.findAll({
+            where: {
+                id_member: id
+            }
         });
+        try{
+            songs.forEach(async (song) => {
+                await songsController.deleteSong(song.id_song);
+            });
+        }catch(error){
+            console.log("Erreur deleteAllMemberSongs");
+        }      
     }catch(error){
-        console.log("Erreur deleteAllMemberSongs");
+        res.status(400).json({message : 'Error getting all member songs', error});
     }
 };
 

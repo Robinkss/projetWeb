@@ -29,7 +29,7 @@ exports.getImageByName = (req, res) => {
   const { genre_name } = req.params;
   
   // Construction du chemin d'accès à l'image en utilisant l'identifiant
-  const imagePath = path.join(__dirname, '../images/genres', `${genre_name}.jpg`);
+  const imagePath = path.join(__dirname, '../ressources/images/genres', `${genre_name}.jpg`);
   
   // Vérification de l'existence de l'image
   if (fs.existsSync(imagePath)) {
