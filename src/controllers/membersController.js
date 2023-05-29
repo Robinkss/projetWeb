@@ -5,7 +5,7 @@ const MemberParticipateProject = require('../models/MemberParticipateProject');
 const Song = require('../models/Song');
 const songsController = require('./songsController');
 const Project = require('../models/Project');
-const {Sequelize, Op} = require('sequelize');
+const {Sequelize, Op, where} = require('sequelize');
 const db = require('../config/db');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -18,7 +18,11 @@ const fs = require('fs');
 
 
 exports.getAllMembers = async (req, res) =>{
-    const members = await Member.findAll();
+    const members = await Member.findAll({
+        where : {
+            admin: false
+        }
+    });
     res.json(members);
 };
 
@@ -92,7 +96,7 @@ exports.signUp = async (req, res) =>{
             member_password: hashedPassword,
             member_description: req.body.description,
             member_photo: req.body.photo,
-            admin: false
+            admin: req.body.admin || false
         });
         const photo = req.body.photoInput;
         console.log('Photo : ');

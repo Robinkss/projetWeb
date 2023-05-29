@@ -67,6 +67,7 @@ exports.createSong = async (req, res) =>{
 
 exports.uploadSongFiles = async (req, res) => {
     const { id } = req.params;
+    console.log("id :"+id);
     console.log("Req.files :");
     console.log(req.files);
     
