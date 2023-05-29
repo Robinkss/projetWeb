@@ -1,5 +1,6 @@
 const Song = require('../models/Song');
 const Genre = require('../models/Genre');
+const Member = require('../models/Member');
 const SongBelongGenre = require('../models/SongBelongGenre');
 const MemberCollaborateSong = require('../models/MemberCollaborateSong');
 const path = require('path');
@@ -42,6 +43,33 @@ exports.getSongByName = async (req, res) =>{
         res.status(400).json({message : 'Error song not found', error});
     } 
 };
+
+exports.getSongsByGenreId = async (req, res) => {
+    const { id } = req.params;
+    console.log("id genre: " + id);
+    try {
+        const songs = await Song.findAll({
+            where: {
+                id_genre: id
+            },
+            include: [
+                {
+                    model: Member,
+                    attributes: ['member_name']
+                }
+            ]
+        });
+        
+        songs.forEach(song => {
+            console.log(song.member.member_name);
+        });
+        res.json(songs);
+    } catch (error) {
+        console.log("Error occurred:", error);
+        res.status(400).json({ message: 'Error songs not found', error });
+    }
+};
+
 
 //==============================//
 

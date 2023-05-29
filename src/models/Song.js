@@ -25,6 +25,9 @@ const Song = sequelize.define('song', {
 Member.hasMany(Song, {
     foreignKey: "id_member",
 });
+Song.belongsTo(Member, {
+    foreignKey: "id_member",
+});
 
 
 Project.hasMany(Song, {

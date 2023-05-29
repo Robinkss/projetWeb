@@ -11,6 +11,7 @@ router.get("/", controller.getAllSong);
 router.get("/:id", controller.getSongById);
 router.get("/name/:name", controller.getSongByName);
 router.get("/:id/project", controller.getSongProjectById)
+router.get("/genre/:id", controller.getSongsByGenreId);
 
 
 //===== POST REQUESTS =====//
