@@ -22,7 +22,8 @@ router.post("/upload/:id", auth, upload.fields([{name: "songImage", maxCount: 1 
 //router.post("/addMember", controller.addMemberToSong);
 
 //===== DELETE REQUESTS =====//
-router.delete("/delete", controller.deleteSongById);
+router.delete("/delete/:id_song", auth,  controller.deleteSongById);
+
 //router.delete("/deleteGenre", controller.deleteGenreToSong);
 router.delete("/deleteMember", controller.deleteMemberToSong);
 

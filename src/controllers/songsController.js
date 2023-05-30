@@ -124,13 +124,49 @@ exports.uploadSongFiles = async (req, res) => {
 
 //=== DELETE A SONG ===//
 exports.deleteSongById = async (req, res) =>{
-    const {id} = req.body;
-    isDeleted = await deleteSong(id);
+    const {id_song} = req.params;
+    console.log("Dans le deleteSongById");
+    console.log(id_song);
+    const song = await Song.findByPk(id_song);
+    if(!song){
+        res.status(400).json({ message : 'Song not found'});
+    }
+    isDeleted = await deleteSong(id_song);
+    // Supprimer le fichier audio (son.mp3)
+    const audioPath = path.join(__dirname, '../ressources/songs', `${song.id_song}.mp3`);
+    if (fs.existsSync(audioPath)) {
+        fs.unlinkSync(audioPath);
+    }
+
+    // Supprimer le fichier image (son.png)
+    const imagePath = path.join(__dirname, '../ressources/images/songs', `${song.id_song}.jpg`);
+    if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+    }
+
     if(isDeleted){
         res.status(201).json({message : 'Song deleted'});
     }else{
         res.status(400).json({ message : 'Error deleting song'});
     }
+};
+
+const deleteSong = async (songId) => {
+    try{
+        MemberCollaborateSong.destroy({
+            where: {
+                id_song: songId
+            }
+        })
+        await Song.destroy({
+            where: {
+                id_song: songId
+            }
+        })
+        return true;
+    }catch (error){
+        return false;
+    }    
 };
 
 exports.deleteSong = async (songId) => {
@@ -148,8 +184,7 @@ exports.deleteSong = async (songId) => {
         return true;
     }catch (error){
         return false;
-    }
-    
+    }    
 };
 
 

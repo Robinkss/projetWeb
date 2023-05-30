@@ -234,7 +234,18 @@ deleteAllMemberSongs = async (id) =>{
         });
         try{
             songs.forEach(async (song) => {
-                await songsController.deleteSong(song.id_song);
+                const isDeleted = await songsController.deleteSong(song.id_song);
+                if(isDeleted){
+                    const audioPath = path.join(__dirname, '../ressources/songs', `${song.id_song}.mp3`);
+                    if (fs.existsSync(audioPath)) {
+                        fs.unlinkSync(audioPath);
+                    }
+                    // Supprimer le fichier image (son.png)
+                    const imagePath = path.join(__dirname, '../ressources/images/songs', `${song.id_song}.jpg`);
+                    if (fs.existsSync(imagePath)) {
+                        fs.unlinkSync(imagePath);
+                    }              
+                }
             });
         }catch(error){
             console.log("Erreur deleteAllMemberSongs");
@@ -279,13 +290,28 @@ exports.updateMailById = async (req, res) =>{
 
 exports.updatePasswordById = async (req, res) =>{
     const {id, password} = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
     try{
-        await Member.update({member_password: password},{
+        await Member.update({member_password: hashedPassword},{
             where: {
                 id_member: id
             }
         })
         res.status(201).json({message : 'Member password updated !'});
+    }catch(error){
+        res.status(400).json({ message : 'Error updating member', error});
+    }
+};
+
+exports.updateDescriptionById = async (req, res) =>{
+    const {id, description} = req.body;
+    try{
+        await Member.update({member_description: description},{
+            where: {
+                id_member: id
+            }
+        })
+        res.status(201).json({message : 'Member description updated !'});
     }catch(error){
         res.status(400).json({ message : 'Error updating member', error});
     }
@@ -297,7 +323,7 @@ exports.updatePasswordById = async (req, res) =>{
 //===== REQUESTS WITH FOLLOW TABLE
 exports.getFollowsById = async (req, res) => {
     const {id} = req.params;
-    console.log(id);
+    console.log("sqks,skv,lk");
     
     try{
         const follows = await db.query('select m.member_name, m2.member_name as suit'
@@ -317,9 +343,10 @@ exports.getFollowsById = async (req, res) => {
 
 // Permet à un membre de suivre un autre membre
 exports.followMember = async (req, res) =>{
-    const userId = req.token.id_member
-    const {idFollowed} = req.body;
-    if(userId == idFollowed){
+    const {userId, idFollowed} = req.body;
+    console.log('userId : '+userId);
+    console.log('idFollowed : '+idFollowed);
+    if(userId === idFollowed){
         return res.status(400).json({message: 'Impossible de se suivre soi-même !'});
     }
     try{
@@ -332,12 +359,12 @@ exports.followMember = async (req, res) =>{
 
 // Permet à un membre d'unfollow un autre membre
 exports.unfollowMember = async (req, res) =>{
-    const {id, id2} = req.body;
+    const {userId, idUnfollowed} = req.body;
     try{
         await MemberFollowMember.destroy({
             where: {
-            id_member: id,
-            id_member2: id2,
+            id_member: userId,
+            id_member2: idUnfollowed,
             }
         })
         res.status(201).json({message : 'Unfollow has successfuly down!'});
@@ -345,6 +372,27 @@ exports.unfollowMember = async (req, res) =>{
         res.status(400).json({ message : 'Error trying to delete a row of MemberFollowMember table', error});
     }
 };
+
+exports.isFollow = async (req, res) => {
+    const { userId, isFollowed } = req.params;
+    
+
+    try {
+        const isFollow = await MemberFollowMember.findOne({
+            where: {
+                id_member: userId,
+                id_member2: isFollowed,
+            },
+        });
+
+        res.status(200).json(!!isFollow);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+    
 
 
 
