@@ -108,6 +108,24 @@ exports.signUp = async (req, res) =>{
 };
 
 
+exports.updloadImage = async (req, res) => {
+    const { id } = req.params; 
+    const userImageFile = req.files["userImage"][0];
+    console.log("userImageFile : ");
+    console.log(userImageFile);
+    try {
+      // Déplacez l'image vers le dossier de destination avec le nom correspondant à l'ID de la musique
+      const userImagePath = path.join(__dirname, "../ressources/images/members", `${id}.jpg`);
+      fs.renameSync(userImageFile.path, userImagePath);
+  
+      // Répondre avec succès
+      res.status(200).json({ message: "Fichiers téléchargés avec succès." });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: "Une erreur s'est produite lors du déplacement des fichiers." });
+    }
+
+    };
 
 //=== LOGIN ===//
 exports.login = async (req, res) =>{

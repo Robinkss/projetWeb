@@ -3,6 +3,8 @@ const express = require('express');
 const controller = require("../controllers/membersController");
 const router = express.Router();
 const auth = require("../middleware/auth");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
 //===== GET REQUESTS =====//
 router.get("/", controller.getAllMembers);
@@ -17,7 +19,7 @@ router.get("/image/:id_user", controller.getImageById);
 router.post("/signup", controller.signUp);
 router.post("/login", controller.login);
 router.post("/follow", auth, controller.followMember);
-
+router.post("/image/upload/:id", upload.fields([{name: "userImage", maxCount: 1 }]), controller.updloadImage )
 
 //===== DELETE REQUESTS =====//
 router.delete("/delete/:id", auth, controller.deleteMemberById);
