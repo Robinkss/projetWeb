@@ -12,6 +12,7 @@ router.get("/:id", controller.getSongById);
 router.get("/name/:name", controller.getSongByName);
 router.get("/:id/project", controller.getSongProjectById)
 router.get("/genre/:id", controller.getSongsByGenreId);
+router.get("/image/:id_song", controller.getImageById);
 
 
 //===== POST REQUESTS =====//

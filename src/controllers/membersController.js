@@ -58,7 +58,7 @@ exports.getImageById = (req, res) => {
     const { id_user } = req.params;
     
     // Construction du chemin d'accès à l'image en utilisant l'identifiant
-    const imagePath = path.join(__dirname, '../images/members', `${id_user}.png`);
+    const imagePath = path.join(__dirname, '../ressources/images/members', `${id_user}.jpg`);
     
     // Vérification de l'existence de l'image
     if (fs.existsSync(imagePath)) {

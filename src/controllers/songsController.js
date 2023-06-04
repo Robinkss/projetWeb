@@ -71,6 +71,28 @@ exports.getSongsByGenreId = async (req, res) => {
 };
 
 
+
+exports.getImageById = (req, res) => {
+    const { id_song } = req.params;
+    
+    // Construction du chemin d'accès à l'image en utilisant l'identifiant
+    const imagePath = path.join(__dirname, '../ressources/images/songs', `${id_song}.jpg`);
+    
+    // Vérification de l'existence de l'image
+    if (fs.existsSync(imagePath)) {
+      // Lecture du fichier image
+      const image = fs.readFileSync(imagePath);
+      
+      // Renvoi de la réponse avec le type de contenu "image/jpeg" et l'image elle-même
+      res.contentType('image/jpeg');
+      res.send(image);
+    } else {
+      // Si l'image n'existe pas, renvoie d'une réponse d'erreur ou d'une image par défaut
+      res.status(404).send('Image not found');
+    }
+  };
+
+
 //==============================//
 
 //=== CREATE A TYPE ===//
